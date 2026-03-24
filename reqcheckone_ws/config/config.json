@@ -16,11 +16,14 @@
     "port": "5432"
   },
   "production": {
-    "username": "postgres ",
-    "password": "1004232350",
-    "database": "ReqCheckOne",
-    "host": "localhost",
+    "use_env_variable": "DATABASE_URL",
     "dialect": "postgres",
-    "port": "5432"
+    "protocol": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }
