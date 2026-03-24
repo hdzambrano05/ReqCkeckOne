@@ -1,0 +1,416 @@
+<div
+  class="requirement-page container-fluid py-4"
+  *ngIf="!loading && requirement as req; else loadingState"
+>
+  <div class="detail-shell">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- top actions -->
+    <div class="top-actions mb-4">
+      <button class="back-button" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Volver al proyecto</span>
+      </button>
+    </div>
+
+    <!-- hero -->
+    <section class="hero-card mb-4">
+      <div class="hero-content-wrap">
+        <div class="hero-left">
+          <div class="hero-kicker">GESTIÓN DE REQUISITOS</div>
+
+          <h1 class="hero-title">
+            <span class="hero-icon">
+              <i class="bi bi-file-earmark-text"></i>
+            </span>
+            <span>{{ req.title }}</span>
+          </h1>
+
+          <p class="hero-description">
+            Vista detallada del requisito funcional, su evaluación automática, atributos de calidad
+            y resultados del análisis generado por agentes especializados.
+          </p>
+
+          <div class="hero-badges">
+            <span class="hero-pill" [ngClass]="getStatusClass(req.status)">
+              <i class="bi bi-check2-circle"></i>
+              {{ getStatusLabel(req.status) }}
+            </span>
+
+            <span class="hero-pill priority-pill" [ngClass]="getPriorityClass(req.priority)">
+              <i class="bi bi-flag"></i>
+              {{ getPriorityLabel(req.priority) }}
+            </span>
+
+            <span class="hero-pill hero-pill-dark">
+              <i class="bi bi-layers"></i>
+              Versión {{ req.version || '1.0' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-right" *ngIf="analysis">
+          <div class="hero-score-card">
+            <div class="score-top">
+              <div>
+                <div class="score-kicker">Cumplimiento global</div>
+                <div class="score-label">{{ getScoreLabel(analysis.promedio_cumplimiento || 0) }}</div>
+              </div>
+
+              <div class="score-icon" [ngClass]="getScoreClass(analysis.promedio_cumplimiento || 0)">
+                <i class="bi" [ngClass]="getScoreIcon(analysis.promedio_cumplimiento || 0)"></i>
+              </div>
+            </div>
+
+            <div
+              class="hero-score-number"
+              [ngClass]="getScoreClass(analysis.promedio_cumplimiento || 0)"
+            >
+              {{ analysis.promedio_cumplimiento || 0 }}%
+            </div>
+
+            <div class="hero-progress">
+              <div
+                class="hero-progress-fill"
+                [style.width.%]="analysis.promedio_cumplimiento || 0"
+                [ngClass]="getScoreClass(analysis.promedio_cumplimiento || 0)"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- stats -->
+    <section class="stats-grid mb-4" *ngIf="analysis">
+      <article class="stat-card">
+        <div class="stat-icon primary">
+          <i class="bi bi-bar-chart-line"></i>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">Cumplimiento</div>
+          <div class="stat-value">{{ analysis.promedio_cumplimiento || 0 }}%</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon success">
+          <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">Agentes</div>
+          <div class="stat-value">{{ totalAgents }}</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon warning">
+          <i class="bi bi-sliders"></i>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">Atributos</div>
+          <div class="stat-value">{{ totalAttributes }}</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon purple">
+          <i class="bi bi-check2-square"></i>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">Casos de prueba</div>
+          <div class="stat-value">{{ totalTestCases }}</div>
+        </div>
+      </article>
+    </section>
+
+    <!-- layout -->
+    <div class="content-grid">
+      <!-- left -->
+      <div class="main-column">
+        <!-- descripcion -->
+        <section class="panel-card mb-4">
+          <div class="panel-header">
+            <div>
+              <div class="panel-kicker">INFORMACIÓN BASE</div>
+              <h3 class="panel-title">
+                <i class="bi bi-journal-text"></i>
+                Descripción del requisito
+              </h3>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="content-block">
+              {{ req.text || 'No se ha definido descripción.' }}
+            </div>
+
+            <div *ngIf="req.context" class="context-card mt-4">
+              <div class="context-title">
+                <i class="bi bi-info-circle"></i>
+                Contexto funcional
+              </div>
+              <div class="context-text">
+                {{ req.context }}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- analisis -->
+        <section *ngIf="analysis as a" class="panel-card mb-4">
+          <div class="panel-header">
+            <div>
+              <div class="panel-kicker">ANÁLISIS INTELIGENTE</div>
+              <h3 class="panel-title">
+                <i class="bi bi-cpu"></i>
+                Resultado general del análisis
+              </h3>
+              <p class="panel-subtitle mb-0">
+                Consolidado de evaluación, cumplimiento global y requisito refinado.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="analysis-summary-card" [ngClass]="getAnalysisStateClass()">
+              <div class="analysis-summary-top">
+                <div class="analysis-badge">
+                  {{ a.refined_requirement.estado || 'Generado' }}
+                </div>
+
+                <div
+                  class="analysis-score-badge"
+                  [ngClass]="getScoreClass(a.promedio_cumplimiento || 0)"
+                >
+                  {{ a.promedio_cumplimiento || 0 }}%
+                </div>
+              </div>
+
+              <h4 class="analysis-summary-title">Resumen del requisito refinado</h4>
+
+              <p class="analysis-summary-text">
+                {{ a.refined_requirement.mensaje }}
+              </p>
+
+              <div class="analysis-progress">
+                <div
+                  class="analysis-progress-fill"
+                  [style.width.%]="a.promedio_cumplimiento || 0"
+                  [ngClass]="getScoreClass(a.promedio_cumplimiento || 0)"
+                ></div>
+              </div>
+            </div>
+
+            <div
+              class="suggestions-card mt-4"
+              *ngIf="a.refined_requirement.sugerencias?.length"
+            >
+              <div class="suggestions-title">
+                <i class="bi bi-stars"></i>
+                Sugerencias de mejora
+              </div>
+
+              <div class="suggestions-list">
+                <div class="suggestion-item" *ngFor="let s of a.refined_requirement.sugerencias">
+                  <span class="suggestion-dot"></span>
+                  <span>{{ s }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- atributos -->
+        <section *ngIf="attributes.length" class="panel-card mb-4">
+          <div class="panel-header">
+            <div>
+              <div class="panel-kicker">CALIDAD DEL REQUISITO</div>
+              <h3 class="panel-title">
+                <i class="bi bi-grid-1x2"></i>
+                Atributos evaluados
+              </h3>
+              <p class="panel-subtitle mb-0">
+                Visualización del nivel de cumplimiento promedio por atributo.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="attributes-grid">
+              <article
+                class="attribute-card-modern"
+                *ngFor="let attr of attributes"
+                [ngClass]="getScoreClass(attr.value)"
+              >
+                <div class="attribute-card-top">
+                  <div class="attribute-icon">
+                    <i class="bi" [ngClass]="attr.icon"></i>
+                  </div>
+
+                  <div class="attribute-score-chip" [ngClass]="getScoreClass(attr.value)">
+                    {{ attr.value }}%
+                  </div>
+                </div>
+
+                <div class="attribute-card-title">{{ attr.name }}</div>
+
+                <div class="attribute-card-description">
+                  {{ attr.description }}
+                </div>
+
+                <div class="attribute-card-progress">
+                  <div
+                    class="attribute-card-progress-fill"
+                    [style.width.%]="attr.value"
+                    [ngClass]="getScoreClass(attr.value)"
+                  ></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- agentes -->
+        <section *ngIf="formattedAgents.length" class="panel-card mb-4">
+          <div class="panel-header">
+            <div>
+              <div class="panel-kicker">ANÁLISIS POR ROLES</div>
+              <h3 class="panel-title">
+                <i class="bi bi-people-fill"></i>
+                Evaluación por agentes
+              </h3>
+              <p class="panel-subtitle mb-0">
+                Cada agente aporta una lectura especializada del requisito y posibles casos de prueba.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="agents-stack">
+              <article class="agent-card-modern" *ngFor="let agent of formattedAgents">
+                <button type="button" class="agent-head" (click)="toggleAgent(agent)">
+                  <div class="agent-head-left">
+                    <div class="agent-avatar">
+                      <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div>
+                      <div class="agent-role">{{ agent.role }}</div>
+                      <div class="agent-caption">Evaluación especializada</div>
+                    </div>
+                  </div>
+
+                  <div class="agent-head-right">
+                    <div class="agent-score-chip" [ngClass]="getScoreClass(agent.porcentaje)">
+                      {{ agent.porcentaje }}%
+                    </div>
+                    <i class="bi ms-2" [ngClass]="agent.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  </div>
+                </button>
+
+                <div class="agent-body" *ngIf="agent.expanded">
+                  <div class="agent-attributes-grid" *ngIf="agent.attributes.length">
+                    <div class="agent-attribute-box" *ngFor="let item of agent.attributes">
+                      <div class="agent-attribute-name">{{ item.name }}</div>
+                      <div class="agent-attribute-value">{{ item.value }}</div>
+                    </div>
+                  </div>
+
+                  <div class="test-box mt-3" *ngIf="agent.casos.length">
+                    <div class="test-box-title">
+                      <i class="bi bi-check2-square"></i>
+                      Casos de prueba
+                    </div>
+                    <ul class="test-list">
+                      <li *ngFor="let c of agent.casos">{{ c }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- right -->
+      <aside class="side-column">
+        <section class="side-card mb-4">
+          <div class="side-card-header">
+            <div class="panel-kicker">RESUMEN RÁPIDO</div>
+            <h3 class="side-title">Datos del requisito</h3>
+          </div>
+
+          <div class="side-card-body">
+            <div class="meta-row">
+              <span class="meta-label">Proyecto</span>
+              <span class="meta-value">{{ projectName || 'N/A' }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="meta-label">Estado</span>
+              <span class="meta-value">{{ getStatusLabel(req.status) }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="meta-label">Prioridad</span>
+              <span class="meta-value">{{ getPriorityLabel(req.priority) }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="meta-label">Versión</span>
+              <span class="meta-value">{{ req.version || '1.0' }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="meta-label">Creado</span>
+              <span class="meta-value">{{ formatDate(req.created_at) }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="meta-label">Actualizado</span>
+              <span class="meta-value">{{ formatDate(req.updated_at) }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section *ngIf="analysis?.refined_requirement?.mensaje" class="side-card mb-4">
+          <div class="side-card-header">
+            <div class="panel-kicker">VERSIÓN REFINADA</div>
+            <h3 class="side-title">Requisito optimizado</h3>
+          </div>
+
+          <div class="side-card-body">
+            <div class="refined-box">
+              {{ analysis?.refined_requirement?.mensaje }}
+            </div>
+          </div>
+        </section>
+
+        <section *ngIf="!analysis" class="side-card">
+          <div class="side-card-header">
+            <div class="panel-kicker">SIN ANÁLISIS</div>
+            <h3 class="side-title">Estado actual</h3>
+          </div>
+
+          <div class="side-card-body">
+            <div class="empty-mini-box">
+              Este requisito no contiene información de análisis disponible.
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingState>
+  <div class="loading-screen">
+    <div class="loading-card">
+      <div class="loading-spinner"></div>
+      <h4 class="loading-title">Cargando requisito</h4>
+      <p class="loading-text">Estamos preparando la vista detallada del análisis.</p>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,266 @@
+/* ===== WRAPPER GENERAL ===== */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top left, #1e293b, #0f172a);
+    padding: 2rem;
+}
+
+/* ===== CONTENEDOR ===== */
+.auth-container {
+    width: 950px;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== LADO IZQUIERDO ===== */
+.auth-side {
+    background: linear-gradient(160deg, #4f46e5, #6366f1);
+    padding: 3rem;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+}
+
+.brand-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.auth-side h2 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.auth-side p {
+    opacity: 0.85;
+    line-height: 1.6;
+}
+
+.decor-circle {
+    position: absolute;
+    bottom: -80px;
+    right: -80px;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+/* ===== PANEL FORMULARIO ===== */
+.auth-form-panel {
+    background: #ffffff;
+    padding: 3rem;
+    position: relative;
+}
+
+.form-header h3 {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.form-header span {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #64748b;
+    cursor: pointer;
+}
+
+/* ===== INPUT MODERNO ===== */
+.input-group-modern {
+    position: relative;
+    margin-top: 2rem;
+}
+
+.input-group-modern input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 8px 0;
+    outline: none;
+    font-size: 0.95rem;
+    background: transparent;
+}
+
+.input-group-modern label {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    color: #94a3b8;
+    transition: 0.3s ease;
+    pointer-events: none;
+}
+
+.input-group-modern input:focus+label,
+.input-group-modern input:valid+label {
+    top: -14px;
+    font-size: 0.75rem;
+    color: #4f46e5;
+}
+
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: #4f46e5;
+    transition: 0.4s ease;
+}
+
+.input-group-modern input:focus~.input-line {
+    width: 100%;
+}
+
+/* ===== PASSWORD ICON ===== */
+.password-group .eye-btn {
+    position: absolute;
+    right: 0;
+    top: 8px;
+    border: none;
+    background: none;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+/* ===== BOTÓN MODERNO ===== */
+.btn-modern {
+    width: 100%;
+    margin-top: 2.5rem;
+    padding: 12px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: white;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.btn-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.4);
+}
+
+/* ===== SWITCH ===== */
+.switch-auth {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.switch-auth a {
+    color: #4f46e5;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ==============================
+   MENSAJES DE ERROR INPUT
+============================== */
+
+.error-msg {
+    margin-top: 6px;
+    animation: fadeIn 0.3s ease;
+}
+
+.error-msg small {
+    display: block;
+    color: #ff4d4f;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Borde rojo cuando hay error */
+.input-error {
+    border-color: #ff4d4f !important;
+}
+
+.input-error+label {
+    color: #ff4d4f !important;
+}
+
+/* ==============================
+   MENSAJES BACKEND
+============================== */
+
+.server-error {
+    margin-top: 18px;
+    padding: 12px;
+    background: #ffeaea;
+    color: #d63031;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+.server-success {
+    margin-top: 18px;
+    padding: 12px;
+    background: #eafaf1;
+    color: #27ae60;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ==============================
+   ANIMACIÓN SUAVE
+============================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-side {
+        display: none;
+    }
+}

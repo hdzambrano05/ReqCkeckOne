@@ -1,0 +1,340 @@
+<div class="requirement-studio-shell">
+  <div class="requirement-studio-container">
+    <!-- ================= HEADER ================= -->
+    <section class="studio-hero">
+      <div class="studio-hero-left">
+        <button class="btn-back-studio" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i>
+          <span>Volver</span>
+        </button>
+
+        <div class="studio-title-block">
+          <span class="studio-kicker">Requirement AI Studio</span>
+          <h2>Nuevo Requisito</h2>
+          <p>Redacta, analiza y mejora la calidad del requisito con asistencia inteligente.</p>
+        </div>
+      </div>
+
+      <div class="studio-hero-right">
+        <div class="hero-project-card">
+          <div class="hero-project-icon">
+            <i class="bi bi-diagram-3-fill"></i>
+          </div>
+          <div>
+            <small>Proyecto actual</small>
+            <strong>{{ projectName }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="studio-grid">
+      <!-- ================= PANEL IZQUIERDO ================= -->
+      <section class="studio-panel editor-panel">
+        <div class="panel-top">
+          <div>
+            <span class="panel-kicker">Editor guiado</span>
+            <h3>Redacción del requisito</h3>
+          </div>
+
+          <div class="rf-floating-badge">
+            {{ nextRfCode }}
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="analyzeRequirement()" class="studio-form">
+          <!-- título -->
+          <div class="field-block">
+            <label class="field-label">Título del requisito</label>
+            <div class="smart-input-wrap">
+              <div class="smart-prefix">{{ nextRfCode }}</div>
+              <input
+                type="text"
+                class="smart-input with-prefix"
+                formControlName="title"
+                placeholder="Ej: Ingreso de estudiantes"
+              />
+            </div>
+          </div>
+
+          <!-- descripcion -->
+          <div class="field-block">
+            <label class="field-label">Descripción del requisito</label>
+            <div class="smart-textarea-wrap">
+              <textarea
+                class="smart-textarea large"
+                formControlName="text"
+                placeholder="Describe el requisito con claridad..."
+              ></textarea>
+              <div class="textarea-corner-icon">
+                <i class="bi bi-pencil-square"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- contexto -->
+          <div class="field-block">
+            <label class="field-label">Contexto del proyecto</label>
+            <div class="context-card">
+              <textarea
+                class="smart-textarea context-area"
+                formControlName="descripcion_proyecto"
+                [(ngModel)]="description"
+                readonly
+                rows="4"
+              ></textarea>
+              <div *ngIf="description.length > 250" class="context-fade"></div>
+            </div>
+          </div>
+
+          <!-- estado / fecha -->
+          <div class="form-grid-two">
+            <div class="field-block">
+              <label class="field-label">Estado</label>
+              <select class="smart-select" formControlName="status">
+                <option value="activo">Activo</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
+            </div>
+
+            <div class="field-block">
+              <label class="field-label">Fecha límite</label>
+              <input type="date" class="smart-input" formControlName="due_date" />
+            </div>
+          </div>
+
+          <!-- versión / prioridad -->
+          <div class="form-grid-two">
+            <div class="field-block">
+              <label class="field-label">Versión</label>
+              <input type="number" class="smart-input" formControlName="version" />
+            </div>
+
+            <div class="field-block">
+              <label class="field-label">Prioridad</label>
+              <input class="smart-input read-only" [formControl]="priorityControl" readonly />
+            </div>
+          </div>
+
+          <!-- creado por -->
+          <div class="field-block">
+            <label class="field-label">Creado por</label>
+            <input class="smart-input read-only" [formControl]="createdByControl" readonly />
+          </div>
+
+          <div class="editor-actions">
+            <button type="submit" class="btn-analyze-ai" [disabled]="loadingAnalysis">
+              <span *ngIf="!loadingAnalysis">
+                <i class="bi bi-cpu-fill"></i>
+                Analizar Calidad
+              </span>
+
+              <span *ngIf="loadingAnalysis" class="btn-loading-inline">
+                <span class="spinner-border spinner-border-sm"></span>
+                Analizando...
+              </span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ================= PANEL DERECHO ================= -->
+      <section class="studio-panel analysis-panel">
+        <div class="analysis-header">
+          <div>
+            <span class="panel-kicker">Diagnóstico inteligente</span>
+            <h3>Resultado del análisis</h3>
+          </div>
+        </div>
+
+        <!-- score -->
+        <div class="quality-orbit-block">
+          <div
+            class="quality-orbit"
+            [ngClass]="{
+              'orbit-low': getTotalProgress() < 40,
+              'orbit-medium': getTotalProgress() >= 40 && getTotalProgress() < 70,
+              'orbit-high': getTotalProgress() >= 70,
+            }"
+          >
+            <div class="quality-orbit-inner">
+              <span>{{ getTotalProgress() }}%</span>
+              <small>Calidad</small>
+            </div>
+          </div>
+
+          <p class="quality-caption">Evaluación global del requisito</p>
+        </div>
+
+        <div class="analysis-divider"></div>
+
+        <!-- atributos -->
+        <div class="attributes-stack">
+          <div *ngFor="let attr of attributes" class="attribute-card">
+            <div class="attribute-top">
+              <div
+                class="attribute-name"
+                data-bs-toggle="tooltip"
+                [attr.title]="attributeDescriptions[attr.name]"
+              >
+                <span>{{ attr.name }}</span>
+                <i class="bi bi-info-circle"></i>
+              </div>
+
+              <span class="attribute-value">{{ attr.value }}%</span>
+            </div>
+
+            <div class="bar-shell">
+              <div
+                class="bar-fill"
+                [style.width.%]="attr.value"
+                [ngClass]="{
+                  'bar-good': attr.value >= 80,
+                  'bar-mid': attr.value >= 50 && attr.value < 80,
+                  'bar-low': attr.value < 50,
+                }"
+              ></div>
+            </div>
+
+            <div
+              *ngIf="attributeSuggestions[attr.name]?.length && attr.value <= 60"
+              class="suggestion-card"
+            >
+              <div class="suggestion-icon">
+                <i class="bi bi-lightbulb-fill"></i>
+              </div>
+
+              <div class="suggestion-content">
+                <div *ngFor="let s of attributeSuggestions[attr.name]">
+                  {{ s }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- resultado refinado -->
+        <ng-container *ngIf="analysis?.opciones_requisito as rr">
+          <div *ngIf="getTotalProgress() < 30" class="result-state-card danger-state">
+            <div class="result-state-header">
+              <i class="bi bi-exclamation-octagon-fill"></i>
+              <h4>Requisito refinado sugerido</h4>
+            </div>
+
+            <pre class="refined-box">{{ rr.requisito_refinado || 'No disponible' }}</pre>
+
+            <button class="btn-copy-refined" (click)="copyRefinedToText()">
+              <i class="bi bi-clipboard-check"></i>
+              Copiar al campo
+            </button>
+          </div>
+
+          <div
+            *ngIf="getTotalProgress() >= 30 && getTotalProgress() < 60"
+            class="result-state-card warning-state"
+          >
+            <div class="result-state-header">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <h4>Debe mejorar el requisito</h4>
+            </div>
+
+            <pre class="refined-box">{{ rr.requisito_refinado || 'No disponible' }}</pre>
+
+            <button class="btn-copy-refined" (click)="copyRefinedToText()">
+              <i class="bi bi-clipboard-check"></i>
+              Copiar al campo
+            </button>
+          </div>
+
+          <div *ngIf="getTotalProgress() >= 60" class="save-ready-card">
+            <div class="save-ready-top">
+              <div class="save-ready-icon">
+                <i class="bi bi-patch-check-fill"></i>
+              </div>
+
+              <div>
+                <h4>Requisito listo para guardar</h4>
+                <p>La calidad actual permite registrar este requisito en el proyecto.</p>
+              </div>
+            </div>
+
+            <button class="btn-save-requirement" (click)="saveRequirement()" [disabled]="!canSave">
+              <i class="bi bi-check-circle-fill"></i>
+              Guardar Requisito
+            </button>
+          </div>
+        </ng-container>
+      </section>
+    </div>
+  </div>
+
+  <!-- ================= MODAL NOTIFICACIÓN GENERAL ================= -->
+  <div *ngIf="showModal" class="overlay-modal">
+    <div
+      class="floating-modal"
+      [ngClass]="{
+        'type-success': modalType === 'success',
+        'type-error': modalType === 'error',
+        'type-info': modalType === 'info',
+      }"
+    >
+      <div class="floating-modal-icon">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-check-circle-fill': modalType === 'success',
+            'bi-x-circle-fill': modalType === 'error',
+            'bi-info-circle-fill': modalType === 'info',
+          }"
+        ></i>
+      </div>
+
+      <p>{{ modalMessage }}</p>
+      <button class="floating-close-btn" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ================= MODAL CARGA ================= -->
+  <div *ngIf="loadingAnalysis" class="overlay-modal">
+    <div class="floating-modal loading-modal-box text-center">
+      <div class="loader-premium"></div>
+      <h4>Analizando requisito</h4>
+      <p>La IA está evaluando claridad, consistencia y completitud.</p>
+    </div>
+  </div>
+
+  <!-- ================= MODAL ÉXITO GUARDADO ================= -->
+  <div *ngIf="showSavedSuccessModal" class="overlay-modal">
+    <div class="saved-success-modal">
+      <div class="saved-success-glow"></div>
+
+      <div class="saved-success-icon">
+        <i class="bi bi-check2-circle"></i>
+      </div>
+
+      <span class="saved-success-badge">
+        <i class="bi bi-stars"></i>
+        Guardado exitoso
+      </span>
+
+      <h3>El requisito se guardó correctamente</h3>
+      <p>
+        Tu requisito ya quedó registrado en el proyecto.
+        <br />
+        ¿Quieres analizar otro requisito?
+      </p>
+
+      <div class="saved-success-actions">
+        <button class="btn-another-requirement" (click)="analyzeAnotherRequirement()">
+          <i class="bi bi-arrow-clockwise"></i>
+          Sí, analizar otro
+        </button>
+
+        <button class="btn-finish-flow" (click)="finishRequirementFlow()">
+          <i class="bi bi-box-arrow-left"></i>
+          No, volver
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

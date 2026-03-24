@@ -1,0 +1,137 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <!-- Panel lateral -->
+    <div class="auth-side">
+      <div class="brand">
+        <div class="brand-badge">JH</div>
+        <span>ReqCheckOne</span>
+      </div>
+
+      <h2>Construye calidad desde el inicio</h2>
+      <p>Analiza y valida tus requisitos funcionales con precisión profesional.</p>
+
+      <div class="decor-circle"></div>
+    </div>
+
+    <!-- Panel formulario -->
+    <div class="auth-form-panel">
+      <button class="back-btn" [routerLink]="['/login']">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+
+      <div class="form-header">
+        <h3>Crear cuenta</h3>
+        <span>Empieza tu experiencia profesional</span>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <!-- Usuario -->
+        <div class="input-group-modern">
+          <input
+            type="text"
+            formControlName="username"
+            [class.input-error]="username?.invalid && username?.touched"
+          />
+          <label>Usuario</label>
+          <span class="input-line"></span>
+
+          <div class="error-msg" *ngIf="username?.invalid && username?.touched">
+            <small *ngIf="username?.errors?.['required']"> El usuario es obligatorio. </small>
+            <small *ngIf="username?.errors?.['minlength']"> Debe tener mínimo 3 caracteres. </small>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group-modern">
+          <input
+            type="email"
+            formControlName="email"
+            [class.input-error]="email?.invalid && email?.touched"
+          />
+          <label>Correo electrónico</label>
+          <span class="input-line"></span>
+
+          <div class="error-msg" *ngIf="email?.invalid && email?.touched">
+            <small *ngIf="email?.errors?.['required']"> El correo es obligatorio. </small>
+            <small *ngIf="email?.errors?.['email']"> Formato de correo inválido. </small>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="input-group-modern password-group">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            [class.input-error]="password?.invalid && password?.touched"
+          />
+
+          <label>Contraseña</label>
+          <span class="input-line"></span>
+
+          <button type="button" class="eye-btn" (click)="showPassword = !showPassword">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+
+          <div class="error-msg" *ngIf="password?.invalid && password?.touched">
+            <small *ngIf="password?.errors?.['required']"> La contraseña es obligatoria. </small>
+            <small *ngIf="password?.errors?.['minlength']"> Debe tener mínimo 8 caracteres. </small>
+            <small *ngIf="password?.errors?.['pattern']">
+              Debe incluir mayúscula, minúscula, número y símbolo.
+            </small>
+          </div>
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="input-group-modern password-group">
+          <input
+            [type]="showConfirm ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            [class.input-error]="
+              (confirmPassword?.invalid && confirmPassword?.touched) ||
+              (form.errors?.['passwordMismatch'] && confirmPassword?.touched)
+            "
+          />
+
+          <label>Confirmar contraseña</label>
+          <span class="input-line"></span>
+
+          <button type="button" class="eye-btn" (click)="showConfirm = !showConfirm">
+            <i [class]="showConfirm ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+
+          <div
+            class="error-msg"
+            *ngIf="
+              (confirmPassword?.touched && confirmPassword?.invalid) ||
+              (form.errors?.['passwordMismatch'] && confirmPassword?.touched)
+            "
+          >
+            <small *ngIf="confirmPassword?.errors?.['required']">
+              Debes confirmar la contraseña.
+            </small>
+            <small *ngIf="form.errors?.['passwordMismatch']"> Las contraseñas no coinciden. </small>
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <button class="btn-modern" [disabled]="form.invalid || loading">
+          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
+
+        <!-- Mensajes backend -->
+        <div class="server-error" *ngIf="error">
+          {{ error }}
+        </div>
+
+        <div class="server-success" *ngIf="success">
+          {{ success }}
+        </div>
+      </form>
+
+      <div class="switch-auth">
+        ¿Ya tienes cuenta?
+        <a [routerLink]="['/login']">Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+</div>

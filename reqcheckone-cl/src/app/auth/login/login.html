@@ -1,0 +1,66 @@
+<div class="auth-wrapper">
+  <div class="auth-container">
+    <!-- Lado Branding -->
+    <div class="auth-brand">
+      <div class="brand-logo">
+        <div class="brand-icon">JH</div>
+        <span>ReqCheckOne</span>
+      </div>
+
+      <h1>Quality Requirements Analysis</h1>
+      <p>
+        Plataforma inteligente para evaluar la calidad de requisitos funcionales en proyectos de
+        software.
+      </p>
+    </div>
+
+    <!-- Lado Formulario -->
+    <div class="auth-card">
+      <h2>Bienvenido</h2>
+      <p class="subtitle">Accede a tu cuenta</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="input-group-modern">
+          <input type="text" formControlName="username" required />
+          <label>Usuario o Email</label>
+          <span class="input-line"></span>
+        </div>
+
+        <div class="input-group-modern">
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" required />
+          <label>Contraseña</label>
+          <span class="input-line"></span>
+
+          <button type="button" class="password-toggle" (click)="showPassword = !showPassword">
+            <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        <div class="forgot-password">
+          <a routerLink="/forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button class="btn-modern" type="submit" [disabled]="form.invalid || loading">
+          <span>Ingresar</span>
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </form>
+
+      <div *ngIf="error" class="error-box">
+        {{ error }}
+      </div>
+
+      <div class="auth-footer">
+        ¿No tienes cuenta?
+        <a routerLink="/register">Crear cuenta</a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL DE CARGA -->
+<div class="loading-overlay" *ngIf="loading">
+  <div class="loading-modal">
+    <div class="spinner"></div>
+    <h3>Validando credenciales</h3>
+    <p>Por favor espera un momento...</p>
+  </div>
+</div>

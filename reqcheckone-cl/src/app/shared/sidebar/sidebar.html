@@ -1,0 +1,58 @@
+<nav class="sidebar" [class.collapsed]="!isSidebarOpen">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="logo-container" *ngIf="isSidebarOpen">
+      <div class="logo-icon">JH</div>
+      <span class="logo-text">ReqCheckOne</span>
+    </div>
+
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <i class="bi" [ngClass]="isSidebarOpen ? 'bi-layout-sidebar-inset' : 'bi-layout-sidebar'"></i>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <ul class="nav-menu">
+    <li>
+      <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span *ngIf="isSidebarOpen">Dashboard</span>
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/projects" routerLinkActive="active">
+        <i class="bi bi-kanban-fill"></i>
+        <span *ngIf="isSidebarOpen">Proyectos</span>
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/requirements/history" routerLinkActive="active">
+        <i class="bi bi-clipboard-data-fill"></i>
+        <span *ngIf="isSidebarOpen">Historial</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- User -->
+  <div class="sidebar-footer" *ngIf="isSidebarOpen">
+    <div class="user-card">
+      <div class="avatar-wrapper">
+        <div class="avatar-circle">
+          {{ username.charAt(0) | uppercase }}
+        </div>
+        <span class="status-dot"></span>
+      </div>
+
+      <div class="user-details">
+        <span class="user-name">{{ username }}</span>
+        <span class="user-role">Project Analyst</span>
+      </div>
+
+      <button class="logout-icon" (click)="logout()" title="Cerrar sesión">
+        <i class="bi bi-power"></i>
+      </button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,444 @@
+<div class="requirement-shell">
+  <div class="requirement-bg-shape shape-one"></div>
+  <div class="requirement-bg-shape shape-two"></div>
+
+  <div class="container-fluid px-3 px-lg-4 py-4">
+    <!-- HEADER -->
+    <div class="hero-panel mb-4">
+      <div
+        class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3"
+      >
+        <div class="hero-left">
+          <button class="btn btn-light hero-back-btn mb-3" (click)="goBack()">
+            <i class="bi bi-arrow-left-short"></i>
+            Volver
+          </button>
+
+          <div class="hero-kicker">GESTIÓN DE REQUISITOS</div>
+          <h1 class="hero-title">Editar requisito funcional</h1>
+          <p class="hero-text mb-0">
+            Visualiza el estado del requisito, su análisis inteligente y actualiza su información
+            con una experiencia más clara, moderna y profesional.
+          </p>
+        </div>
+
+        <div class="hero-stats" *ngIf="analysis">
+          <div class="hero-score-card" [ngClass]="scoreClass">
+            <div class="hero-score-ring">
+              <span>{{ averageScore }}%</span>
+            </div>
+            <div>
+              <div class="hero-score-label">Cumplimiento general</div>
+              <div class="hero-score-value">{{ scoreLabel }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="col-xl-5 col-lg-6">
+        <form [formGroup]="form" class="glass-card form-panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-kicker">FORMULARIO</div>
+              <h3 class="panel-title">Información principal</h3>
+            </div>
+
+            <div *ngIf="analysis" class="mini-pill" [ngClass]="scoreClass">{{ averageScore }}%</div>
+          </div>
+
+          <div class="panel-body">
+            <div class="field-group">
+              <label class="field-label">
+                <i class="bi bi-folder2-open"></i>
+                Proyecto
+              </label>
+              <div class="modern-readonly-box">
+                <div class="modern-readonly-title">{{ projectName || 'Cargando proyecto...' }}</div>
+                <small class="text-muted">{{
+                  description || 'Sin descripción del proyecto.'
+                }}</small>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <i class="bi bi-type"></i>
+                Título del requisito
+              </label>
+              <input class="form-control modern-input" formControlName="title" />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <i class="bi bi-card-text"></i>
+                Descripción del requisito
+              </label>
+              <textarea
+                class="form-control modern-input modern-textarea readonly-soft"
+                formControlName="text"
+                rows="5"
+                readonly
+              ></textarea>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <i class="bi bi-info-circle"></i>
+                Contexto del proyecto
+              </label>
+              <textarea
+                class="form-control modern-input modern-textarea readonly-soft"
+                formControlName="descripcion_proyecto"
+                rows="4"
+                readonly
+              ></textarea>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="field-group mb-0">
+                  <label class="field-label">
+                    <i class="bi bi-flag"></i>
+                    Estado
+                  </label>
+                  <select class="form-select modern-input" formControlName="status">
+                    <option value="draft">Borrador</option>
+                    <option value="reviewed">Revisado</option>
+                    <option value="accepted">Aceptado</option>
+                    <option value="rejected">Rechazado</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="field-group mb-0">
+                  <label class="field-label">
+                    <i class="bi bi-bar-chart-line"></i>
+                    Prioridad sugerida
+                  </label>
+                  <div class="priority-display" [ngClass]="getPriorityBadgeClass()">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    {{ priorityLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="field-group mb-0">
+                  <label class="field-label">
+                    <i class="bi bi-calendar-event"></i>
+                    Fecha límite
+                  </label>
+                  <input class="form-control modern-input" type="date" formControlName="due_date" />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="field-group mb-0">
+                  <label class="field-label">
+                    <i class="bi bi-layers"></i>
+                    Versión
+                  </label>
+                  <input
+                    class="form-control modern-input"
+                    type="number"
+                    formControlName="version"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="save-zone mt-4">
+              <div class="save-info">
+                <div class="save-info-title">Estado de guardado</div>
+                <div class="save-info-text">
+                  {{
+                    canSave
+                      ? 'El requisito cumple con el mínimo requerido para actualizarse.'
+                      : 'El requisito aún no cumple el porcentaje mínimo para guardar.'
+                  }}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-save-modern"
+                [disabled]="!canSave"
+                (click)="updateRequirement()"
+              >
+                <i class="bi bi-check-circle-fill me-2"></i>
+                Actualizar requisito
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div class="col-xl-7 col-lg-6" *ngIf="analysis">
+        <div class="analysis-grid">
+          <!-- RESUMEN -->
+          <div class="glass-card summary-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">RESUMEN INTELIGENTE</div>
+                <h3 class="panel-title">Panorama del requisito</h3>
+              </div>
+            </div>
+
+            <div class="summary-cards">
+              <div class="summary-card">
+                <div class="summary-card-icon primary">
+                  <i class="bi bi-activity"></i>
+                </div>
+                <div>
+                  <div class="summary-card-label">Cumplimiento</div>
+                  <div class="summary-card-value">{{ averageScore }}%</div>
+                </div>
+              </div>
+
+              <div class="summary-card">
+                <div class="summary-card-icon success">
+                  <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div>
+                  <div class="summary-card-label">Agentes</div>
+                  <div class="summary-card-value">{{ agents.length }}</div>
+                </div>
+              </div>
+
+              <div class="summary-card">
+                <div class="summary-card-icon warning">
+                  <i class="bi bi-lightning-charge"></i>
+                </div>
+                <div>
+                  <div class="summary-card-label">Prioridad</div>
+                  <div class="summary-card-value">{{ priorityLabel }}</div>
+                </div>
+              </div>
+
+              <div class="summary-card">
+                <div class="summary-card-icon info">
+                  <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                  <div class="summary-card-label">Estado</div>
+                  <div class="summary-card-value">{{ scoreLabel }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ATRIBUTOS -->
+          <div class="glass-card metrics-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">MATRIZ DE CALIDAD</div>
+                <h3 class="panel-title">Atributos del requisito</h3>
+              </div>
+            </div>
+
+            <div class="metrics-grid">
+              <div
+                class="metric-tile"
+                *ngFor="let attr of attributes"
+                [ngClass]="getAttributeStateClass(attr.value)"
+              >
+                <div class="metric-top">
+                  <div class="metric-icon">
+                    <i class="bi" [ngClass]="attr.icon"></i>
+                  </div>
+                  <div class="metric-status-icon">
+                    <i class="bi" [ngClass]="getAttributeIcon(attr.value)"></i>
+                  </div>
+                </div>
+
+                <div class="metric-name">{{ attr.name }}</div>
+                <div class="metric-value">{{ attr.value }}%</div>
+
+                <div class="metric-bar">
+                  <div class="metric-bar-fill" [style.width.%]="attr.value"></div>
+                </div>
+
+                <div class="metric-description">
+                  {{ attr.description }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUGERENCIAS -->
+          <div
+            class="glass-card suggestions-panel"
+            *ngIf="analysis?.refined_requirement?.sugerencias?.length"
+          >
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">MEJORA CONTINUA</div>
+                <h3 class="panel-title">Sugerencias del sistema</h3>
+              </div>
+            </div>
+
+            <div class="suggestion-list">
+              <div
+                class="suggestion-item"
+                *ngFor="let s of analysis.refined_requirement.sugerencias"
+              >
+                <div class="suggestion-bullet">
+                  <i class="bi bi-stars"></i>
+                </div>
+                <div class="suggestion-text">{{ s }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AGENTES -->
+          <div class="glass-card agents-panel" *ngIf="agents.length">
+            <div class="panel-header">
+              <div>
+                <div class="panel-kicker">ANÁLISIS DETALLADO</div>
+                <h3 class="panel-title">Agentes evaluadores</h3>
+              </div>
+            </div>
+
+            <div class="agents-stack">
+              <div class="agent-card-modern" *ngFor="let agent of agents">
+                <button type="button" class="agent-head" (click)="toggleAgent(agent)">
+                  <div class="agent-head-left">
+                    <div class="agent-avatar">
+                      <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div>
+                      <div class="agent-role">{{ agent.role }}</div>
+                      <div class="agent-subtitle">Evaluación automática del requisito</div>
+                    </div>
+                  </div>
+
+                  <div class="agent-head-right">
+                    <div class="agent-score-chip">{{ agent.porcentaje }}%</div>
+                    <i
+                      class="bi ms-2"
+                      [ngClass]="agent.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"
+                    ></i>
+                  </div>
+                </button>
+
+                <div class="agent-body-modern" *ngIf="agent.expanded">
+                  <div class="agent-attributes-grid">
+                    <div class="agent-attribute-modern" *ngFor="let attr of agent.atributos">
+                      <div class="agent-attribute-label">{{ attr.label }}</div>
+                      <div class="agent-attribute-progress">
+                        <div class="agent-attribute-progress-bar">
+                          <div
+                            class="agent-attribute-progress-fill"
+                            [style.width.%]="attr.value"
+                          ></div>
+                        </div>
+                        <span>{{ attr.value }}%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="test-case-box" *ngIf="agent.casos_prueba.length">
+                    <div class="test-case-title">
+                      <i class="bi bi-clipboard-check me-2"></i>
+                      Casos de prueba
+                    </div>
+                    <ul class="mb-0">
+                      <li *ngFor="let test of agent.casos_prueba">{{ test }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SI NO HAY ANALYSIS -->
+      <div class="col-xl-7 col-lg-6" *ngIf="!analysis">
+        <div class="glass-card empty-analysis-panel">
+          <div class="empty-state-wrap">
+            <div class="empty-state-icon">
+              <i class="bi bi-bar-chart-steps"></i>
+            </div>
+            <h3>Análisis no disponible</h3>
+            <p>
+              Este requisito aún no tiene información de análisis cargada o no se pudo procesar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div
+    *ngIf="modalState.show"
+    class="modal-backdrop fade show custom-backdrop"
+    (click)="modalState.type !== 'loading' ? closeModal() : null"
+  ></div>
+
+  <div
+    *ngIf="modalState.show"
+    class="modal d-block custom-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content custom-modal-content">
+        <div
+          class="custom-modal-header"
+          [ngClass]="{
+            'modal-success': modalState.type === 'success',
+            'modal-error': modalState.type === 'error',
+            'modal-info': modalState.type === 'info',
+            'modal-loading': modalState.type === 'loading',
+          }"
+        >
+          <div class="custom-modal-icon">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-arrow-repeat spin-icon': modalState.type === 'loading',
+                'bi-check2-circle': modalState.type === 'success',
+                'bi-x-circle': modalState.type === 'error',
+                'bi-info-circle': modalState.type === 'info',
+              }"
+            ></i>
+          </div>
+
+          <h5 class="mb-0 mt-3">
+            {{
+              modalState.type === 'loading'
+                ? 'Procesando'
+                : modalState.type === 'success'
+                  ? 'Operación exitosa'
+                  : modalState.type === 'error'
+                    ? 'Ocurrió un error'
+                    : 'Información'
+            }}
+          </h5>
+        </div>
+
+        <div class="modal-body text-center px-4 py-4">
+          <p class="mb-0 modal-message">{{ modalState.message }}</p>
+        </div>
+
+        <div
+          class="modal-footer border-0 justify-content-center pb-4 pt-0"
+          *ngIf="modalState.type !== 'loading'"
+        >
+          <button type="button" class="btn btn-confirm-modern" (click)="closeModal()">
+            <i class="bi bi-check-lg me-2"></i>
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

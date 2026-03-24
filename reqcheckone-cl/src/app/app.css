@@ -1,0 +1,71 @@
+.layout {
+  display: flex;
+}
+
+/* Con sidebar */
+.content {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+/* ===== Layout general ===== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden; /* evita cortes visuales */
+}
+
+/* ===== Contenedor principal ===== */
+.content {
+  flex: 1 1 auto;
+  min-width: 0; /* evita overflow horizontal */
+  transition: margin-left 0.35s ease, padding 0.3s ease;
+}
+
+/* ===== Cuando hay sidebar abierto ===== */
+.content.with-sidebar {
+  margin-left: 260px; /* debe coincidir con el width real del sidebar */
+}
+
+/* ===== Sidebar colapsado ===== */
+.content.collapsed {
+  margin-left: 85px; /* debe coincidir con el width colapsado */
+}
+
+/* ===== Cuando NO hay sidebar (login/register) ===== */
+.content.full {
+  margin-left: 0;
+  padding: 0;
+}
+
+/* 🔥 Quitar recuadro blanco */
+html, body, app-root {
+  background: #f8fafc !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🔥 Hace que el contenido cubra completamente */
+.content {
+  background: #f8fafc;
+}
+
+/* 🔥 Evita línea blanca entre sidebar y contenido */
+.layout {
+  background: #f8fafc;
+}
+
+/* 🔥 Extra: elimina cualquier espacio fantasma */
+.content::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none;
+}

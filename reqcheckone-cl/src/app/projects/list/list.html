@@ -1,0 +1,315 @@
+<div class="projects-shell">
+  <div class="projects-wrapper">
+    <!-- ================= HEADER ================= -->
+    <div class="projects-hero">
+      <div class="projects-hero-left">
+        <div class="hero-icon-box">
+          <i class="bi bi-kanban-fill"></i>
+        </div>
+
+        <div class="hero-copy">
+          <h2>Mis Proyectos</h2>
+          <p>
+            Gestiona, organiza y supervisa tus proyectos activos con una vista más clara y
+            profesional.
+          </p>
+        </div>
+      </div>
+
+      <div class="projects-hero-right">
+        <!-- Buscador -->
+        <div class="search-command-modern">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            placeholder="Buscar proyectos..."
+            [(ngModel)]="searchTerm"
+            (input)="filterProjects()"
+          />
+        </div>
+
+        <!-- Toggle Vista -->
+        <button
+          class="view-switch-modern"
+          (click)="toggleView()"
+          [title]="viewMode === 'cards' ? 'Ver lista' : 'Ver tarjetas'"
+        >
+          <i class="bi" [ngClass]="viewMode === 'cards' ? 'bi-list-ul' : 'bi-grid-1x2-fill'"></i>
+        </button>
+
+        <!-- Crear proyecto -->
+        <button class="btn-create-project" (click)="createProject()">
+          <i class="bi bi-plus-lg"></i>
+          <span>Nuevo Proyecto</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= STATES ================= -->
+    <div *ngIf="loading" class="state-panel loading-panel">
+      <div class="state-icon loading-spin">
+        <i class="bi bi-arrow-repeat"></i>
+      </div>
+      <div>
+        <h4>Cargando proyectos</h4>
+        <p>Estamos preparando tu espacio de trabajo.</p>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="state-panel error-panel">
+      <div class="state-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div>
+        <h4>Ocurrió un problema</h4>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- ================= EMPTY ================= -->
+    <div *ngIf="!loading && !error && !filteredProjects.length" class="empty-projects-panel">
+      <div class="empty-illustration">
+        <i class="bi bi-folder2-open"></i>
+      </div>
+      <h3>No hay proyectos para mostrar</h3>
+      <p>Crea un nuevo proyecto o ajusta tu búsqueda para encontrar resultados.</p>
+      <button class="btn-create-project" (click)="createProject()">
+        <i class="bi bi-plus-lg"></i>
+        <span>Crear proyecto</span>
+      </button>
+    </div>
+
+    <!-- ================= CARDS ================= -->
+    <div
+      class="cards-grid-modern"
+      *ngIf="!loading && !error && viewMode === 'cards' && filteredProjects.length"
+    >
+      <div
+        class="project-card-modern"
+        *ngFor="let project of filteredProjects"
+        (click)="viewProject(project.id)"
+      >
+        <div
+          class="status-strip"
+          [ngClass]="project.status === 'activo' ? 'strip-active' : 'strip-done'"
+        ></div>
+
+        <div class="card-body-modern">
+          <div class="card-top-row">
+            <div class="card-project-badge">
+              <i class="bi bi-folder-fill"></i>
+            </div>
+
+            <span
+              class="status-chip-modern"
+              [ngClass]="project.status === 'activo' ? 'chip-active' : 'chip-done'"
+            >
+              {{ project.status || 'Sin estado' }}
+            </span>
+          </div>
+
+          <div class="card-main-content">
+            <h4 class="project-title">{{ project.name }}</h4>
+            <p class="description-modern">
+              {{ truncateText(project.description || 'Sin descripción disponible.', 130) }}
+            </p>
+          </div>
+
+          <div class="card-meta-modern">
+            <div class="meta-line-modern">
+              <i class="bi bi-calendar-event"></i>
+              <span>{{ project.deadline || 'Sin fecha definida' }}</span>
+            </div>
+
+            <div class="meta-line-modern">
+              <i class="bi bi-people"></i>
+              <span>{{ project.collaborators?.length || 0 }} colaboradores</span>
+            </div>
+          </div>
+
+          <div class="card-footer-modern">
+            <div class="avatars-modern">
+              <span
+                *ngFor="let c of project.collaborators"
+                class="avatar-modern"
+                [title]="c.username + ' (' + c.role + ')'"
+                (click)="$event.stopPropagation()"
+              >
+                {{ c.username.charAt(0) | uppercase }}
+              </span>
+
+              <span *ngIf="!project.collaborators?.length" class="no-collaborators"> — </span>
+            </div>
+
+            <div class="card-actions-modern">
+              <button
+                class="btn-danger-modern"
+                (click)="openDeleteModal(project); $event.stopPropagation()"
+                title="Eliminar proyecto"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= LIST VIEW ================= -->
+    <div
+      *ngIf="!loading && !error && viewMode === 'list' && filteredProjects.length"
+      class="list-panel-modern"
+    >
+      <div class="list-header-row">
+        <div>Proyecto</div>
+        <div>Estado</div>
+        <div>Fecha</div>
+        <div>Equipo</div>
+        <div></div>
+      </div>
+
+      <div
+        *ngFor="let project of filteredProjects"
+        class="list-row-modern"
+        (click)="viewProject(project.id)"
+      >
+        <div class="list-col project-col">
+          <div class="project-list-icon">
+            <i class="bi bi-folder-fill"></i>
+          </div>
+
+          <div class="project-list-copy">
+            <div class="project-title">{{ project.name }}</div>
+            <div class="project-desc">
+              {{ truncateText(project.description || 'Sin descripción disponible.', 70) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="list-col">
+          <span
+            class="status-chip-modern"
+            [ngClass]="project.status === 'activo' ? 'chip-active' : 'chip-done'"
+          >
+            {{ project.status || '—' }}
+          </span>
+        </div>
+
+        <div class="list-col date-col">
+          <i class="bi bi-calendar-event"></i>
+          <span>{{ project.deadline || '—' }}</span>
+        </div>
+
+        <div class="list-col">
+          <div class="avatars-modern">
+            <span
+              *ngFor="let c of project.collaborators"
+              class="avatar-modern small"
+              [title]="c.username + ' (' + c.role + ')'"
+              (click)="$event.stopPropagation()"
+            >
+              {{ c.username.charAt(0) | uppercase }}
+            </span>
+            <span *ngIf="!project.collaborators?.length" class="no-collaborators">—</span>
+          </div>
+        </div>
+
+        <div class="list-col actions-col">
+          <button
+            class="btn-danger-modern"
+            (click)="openDeleteModal(project); $event.stopPropagation()"
+            title="Eliminar proyecto"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL DELETE ================= -->
+    <div
+      class="modal fade"
+      id="deleteModal"
+      tabindex="-1"
+      aria-labelledby="deleteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modern-modal-content">
+          <div class="modal-body text-center p-4">
+            <div class="icon-danger-modern mb-3">
+              <i class="bi bi-trash-fill"></i>
+            </div>
+
+            <h4 class="modal-title-modern mb-2" id="deleteModalLabel">Eliminar Proyecto</h4>
+
+            <p class="modal-text-modern mb-4">
+              ¿Seguro que deseas eliminar
+              <strong>{{ projectToDelete?.name }}</strong
+              >?
+              <br />
+              Esta acción no se puede deshacer.
+            </p>
+
+            <div class="modal-actions-modern">
+              <button type="button" class="btn-secondary-modern" (click)="cancelDelete()">
+                Cancelar
+              </button>
+
+              <button type="button" class="btn-danger-modern" (click)="confirmDelete()">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL NO OWNER PREMIUM ================= -->
+    <div
+      class="modal fade"
+      id="notOwnerModal"
+      tabindex="-1"
+      aria-labelledby="notOwnerModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modern-modal-content modal-warning-premium">
+          <div class="modal-body text-center p-4">
+            <div class="warning-top-glow"></div>
+
+            <div class="icon-warning-modern premium-warning-icon mb-3">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <span class="modal-mini-badge">
+              <i class="bi bi-info-circle-fill"></i>
+              Permiso restringido
+            </span>
+
+            <h4 class="modal-title-modern mb-2" id="notOwnerModalLabel">
+              No puedes realizar esta acción
+            </h4>
+
+            <p class="modal-text-modern mb-4">
+              Solo el <strong>dueño del proyecto</strong> tiene permisos para eliminarlo.
+              <br />
+              Si necesitas hacer este cambio, solicita acceso al responsable.
+            </p>
+
+            <div class="modal-actions-modern d-flex justify-content-center">
+              <button
+                type="button"
+                class="btn-primary-modern premium-ok-btn"
+                data-bs-dismiss="modal"
+              >
+                <i class="bi bi-check2-circle"></i>
+                <span>Entendido</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

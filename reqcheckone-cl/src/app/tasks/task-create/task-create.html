@@ -1,0 +1,113 @@
+<div class="task-create-shell" *ngIf="isOwner; else noAccess">
+  <div class="task-create-header">
+    <div class="task-create-badge">
+      <i class="bi bi-stars"></i>
+      <span>Nueva asignación</span>
+    </div>
+
+    <h2>Crear tarea del proyecto</h2>
+    <p>Organiza responsabilidades, asigna un colaborador y define una fecha límite.</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="task-create-form">
+    <div class="form-grid">
+      <!-- Título -->
+      <div class="field-card full-width">
+        <label for="taskTitle" class="modern-label">
+          <i class="bi bi-card-heading"></i>
+          <span>Título</span>
+        </label>
+        <input
+          type="text"
+          id="taskTitle"
+          class="modern-input"
+          placeholder="Ej. Diseñar módulo de autenticación"
+          formControlName="title"
+        />
+        <small class="error-text" *ngIf="f['title'].touched && f['title'].invalid">
+          Ingresa un título válido.
+        </small>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field-card full-width">
+        <label for="taskDescription" class="modern-label">
+          <i class="bi bi-text-paragraph"></i>
+          <span>Descripción</span>
+        </label>
+        <textarea
+          id="taskDescription"
+          class="modern-input modern-textarea"
+          placeholder="Describe claramente qué debe realizar el colaborador"
+          formControlName="description"
+        ></textarea>
+        <small class="error-text" *ngIf="f['description'].touched && f['description'].invalid">
+          La descripción debe ser más detallada.
+        </small>
+      </div>
+
+      <!-- Colaborador -->
+      <div class="field-card">
+        <label for="taskAssignee" class="modern-label">
+          <i class="bi bi-person-workspace"></i>
+          <span>Asignar a</span>
+        </label>
+        <select id="taskAssignee" class="modern-input" formControlName="assignee_id">
+          <option value="">Selecciona un colaborador</option>
+          <option *ngFor="let col of collaborators" [value]="col.id">
+            {{ col.username }}
+          </option>
+        </select>
+        <small class="error-text" *ngIf="f['assignee_id'].touched && f['assignee_id'].invalid">
+          Debes seleccionar un colaborador.
+        </small>
+      </div>
+
+      <!-- Requisito -->
+      <div class="field-card">
+        <label for="taskRequirement" class="modern-label">
+          <i class="bi bi-clipboard-check"></i>
+          <span>Requisito relacionado</span>
+        </label>
+        <select id="taskRequirement" class="modern-input" formControlName="requirement_id">
+          <option value="">Ninguno</option>
+          <option *ngFor="let req of requirements" [value]="req.id">
+            {{ req.title || 'Requisito #' + req.id }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Fecha -->
+      <div class="field-card full-width">
+        <label for="taskDueDate" class="modern-label">
+          <i class="bi bi-calendar2-week"></i>
+          <span>Fecha límite</span>
+        </label>
+        <input type="date" id="taskDueDate" class="modern-input" formControlName="due_date" />
+      </div>
+    </div>
+
+    <div class="task-create-actions">
+      <button type="submit" class="btn-create-task" [disabled]="loading || form.invalid">
+        <span *ngIf="!loading">
+          <i class="bi bi-plus-circle"></i>
+          Crear tarea
+        </span>
+        <span *ngIf="loading">
+          <i class="bi bi-arrow-repeat spin"></i>
+          Creando...
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<ng-template #noAccess>
+  <div class="task-no-access">
+    <div class="task-no-access-icon">
+      <i class="bi bi-shield-lock"></i>
+    </div>
+    <h4>No tienes permisos para crear tareas</h4>
+    <p>Solo el propietario del proyecto puede asignar nuevas tareas.</p>
+  </div>
+</ng-template>

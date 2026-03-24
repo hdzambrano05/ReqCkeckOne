@@ -1,0 +1,246 @@
+/* ===== SIDEBAR BASE ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background: linear-gradient(180deg, #111827, #0f172a);
+    color: #e5e7eb;
+
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    transition: width 0.35s ease;
+}
+
+.sidebar.collapsed {
+    width: 85px;
+}
+
+/* ===== HEADER ===== */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+}
+
+.logo-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Toggle */
+.toggle-btn {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: #cbd5e1;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.toggle-btn:hover {
+    background: rgba(99,102,241,0.2);
+    color: #fff;
+}
+
+/* ===== NAVIGATION ===== */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.nav-menu li {
+    margin-bottom: 10px;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #9ca3af;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+/* Hover */
+.nav-menu a:hover {
+    background: rgba(99,102,241,0.15);
+    color: #fff;
+    transform: translateX(4px);
+}
+
+/* Active */
+.nav-menu a.active {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+}
+
+/* Icon */
+.nav-menu i {
+    font-size: 1.1rem;
+    min-width: 20px;
+}
+
+/* ===== FOOTER ===== */
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(239,68,68,0.3);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ===== FOOTER CON IDENTIDAD ===== */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Card estilo flotante */
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px);
+    transition: 0.3s ease;
+    position: relative;
+}
+
+.user-card:hover {
+    background: rgba(99,102,241,0.12);
+    transform: translateY(-2px);
+}
+
+/* Avatar */
+.avatar-wrapper {
+    position: relative;
+}
+
+.avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #fff;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+}
+
+/* Indicador online */
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background: #22c55e;
+    border: 2px solid #111827;
+    border-radius: 50%;
+}
+
+/* Información */
+.user-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* Logout minimal */
+.logout-icon {
+    background: rgba(239,68,68,0.1);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f87171;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.logout-icon:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: rotate(10deg);
+}

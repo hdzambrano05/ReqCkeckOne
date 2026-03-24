@@ -1,0 +1,284 @@
+<div class="dashboard-wrapper">
+  <div class="dashboard-bg-orb orb-1"></div>
+  <div class="dashboard-bg-orb orb-2"></div>
+  <div class="dashboard-bg-grid"></div>
+
+  <div class="container-fluid py-4 position-relative">
+    <!-- HERO -->
+    <section class="hero-panel mb-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="hero-badge">
+            <i class="bi bi-stars"></i>
+            Dashboard Inteligente
+          </div>
+
+          <h1 class="hero-title">
+            {{ getGreeting() }}, <span>{{ userName }}</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Aquí tienes una vista ejecutiva de tus proyectos, requisitos y métricas clave para tomar
+            decisiones más rápidas y precisas.
+          </p>
+
+          <div class="hero-metrics">
+            <div class="hero-mini-card">
+              <small>Total proyectos</small>
+              <strong>{{ totalProjects }}</strong>
+            </div>
+            <div class="hero-mini-card">
+              <small>Total requisitos</small>
+              <strong>{{ totalRequirements }}</strong>
+            </div>
+            <div class="hero-mini-card">
+              <small>Promedio/proyecto</small>
+              <strong>{{ avgRequirementsPerProject }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="hero-side-card">
+            <div class="hero-side-top">
+              <span>Resumen general</span>
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+
+            <div class="hero-side-stats">
+              <div>
+                <h3>{{ activeProjects }}</h3>
+                <p>Activos</p>
+              </div>
+              <div>
+                <h3>{{ completedProjects }}</h3>
+                <p>Completados</p>
+              </div>
+              <div>
+                <h3>{{ pendingRequirements }}</h3>
+                <p>Pendientes</p>
+              </div>
+              <div>
+                <h3>{{ highPriorityRequirements }}</h3>
+                <p>Alta prioridad</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="state-card mb-4">
+      <i class="bi bi-hourglass-split"></i>
+      Cargando dashboard...
+    </div>
+
+    <!-- ERROR -->
+    <div *ngIf="error" class="state-card error mb-4">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ error }}
+    </div>
+
+    <ng-container *ngIf="!loading && !error">
+      <!-- KPI CARDS -->
+      <section class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+          <div class="premium-card stat-card stat-blue">
+            <div class="stat-icon">
+              <i class="bi bi-kanban-fill"></i>
+            </div>
+            <div>
+              <p>Total Proyectos</p>
+              <h2>{{ totalProjects }}</h2>
+              <span>Vista global de tus iniciativas</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <div class="premium-card stat-card stat-green">
+            <div class="stat-icon">
+              <i class="bi bi-play-circle-fill"></i>
+            </div>
+            <div>
+              <p>Activos</p>
+              <h2>{{ activeProjects }}</h2>
+              <span>Actualmente en ejecución</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <div class="premium-card stat-card stat-purple">
+            <div class="stat-icon">
+              <i class="bi bi-card-checklist"></i>
+            </div>
+            <div>
+              <p>Requisitos</p>
+              <h2>{{ totalRequirements }}</h2>
+              <span>Total registrados en el sistema</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+          <div class="premium-card stat-card stat-orange">
+            <div class="stat-icon">
+              <i class="bi bi-flag-fill"></i>
+            </div>
+            <div>
+              <p>Alta prioridad</p>
+              <h2>{{ highPriorityRequirements }}</h2>
+              <span>Elementos críticos por atender</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHARTS -->
+      <section class="row g-4 mb-4">
+        <div class="col-xl-7">
+          <div class="premium-card chart-card large-chart">
+            <div class="card-head">
+              <div>
+                <h5>Proyectos con más requisitos</h5>
+                <p>Comparativa de carga funcional entre proyectos</p>
+              </div>
+              <span class="chip">Top 7</span>
+            </div>
+            <div class="chart-box">
+              <canvas id="requirementsPerProjectChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-5">
+          <div class="premium-card chart-card">
+            <div class="card-head">
+              <div>
+                <h5>Estado de proyectos</h5>
+                <p>Distribución actual del portafolio</p>
+              </div>
+            </div>
+            <div class="chart-box chart-box-sm">
+              <canvas id="projectStatusChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-5">
+          <div class="premium-card chart-card">
+            <div class="card-head">
+              <div>
+                <h5>Prioridad de requisitos</h5>
+                <p>Enfoque por criticidad</p>
+              </div>
+            </div>
+            <div class="chart-box chart-box-sm">
+              <canvas id="priorityChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-7">
+          <div class="premium-card chart-card">
+            <div class="card-head">
+              <div>
+                <h5>Tendencia de creación</h5>
+                <p>Requisitos registrados en los últimos meses</p>
+              </div>
+            </div>
+            <div class="chart-box">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLES / INSIGHTS -->
+      <section class="row g-4">
+        <div class="col-xl-6">
+          <div class="premium-card">
+            <div class="card-head mb-3">
+              <div>
+                <h5>Top proyectos</h5>
+                <p>Mayor volumen y progreso estimado</p>
+              </div>
+            </div>
+
+            <div class="project-list" *ngIf="topProjects.length > 0; else emptyTopProjects">
+              <div class="project-item" *ngFor="let project of topProjects">
+                <div class="project-item-top">
+                  <div>
+                    <h6>{{ project.name }}</h6>
+                    <small>{{ project.requirementsCount }} requisitos</small>
+                  </div>
+                  <span class="project-status">{{ project.status || 'Sin estado' }}</span>
+                </div>
+
+                <div class="progress premium-progress">
+                  <div
+                    class="progress-bar"
+                    role="progressbar"
+                    [style.width.%]="getProjectProgress(project)"
+                    [attr.aria-valuenow]="getProjectProgress(project)"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  ></div>
+                </div>
+
+                <div class="project-item-bottom">
+                  <small>Progreso estimado</small>
+                  <strong>{{ getProjectProgress(project) }}%</strong>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #emptyTopProjects>
+              <div class="empty-state">No hay proyectos para mostrar.</div>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="premium-card">
+            <div class="card-head mb-3">
+              <div>
+                <h5>Actividad reciente</h5>
+                <p>Últimos proyectos actualizados</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table premium-table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Proyecto</th>
+                    <th>Estado</th>
+                    <th>Requisitos</th>
+                    <th>Actualizado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let project of recentProjects">
+                    <td>
+                      <div class="table-project-name">{{ project.name }}</div>
+                    </td>
+                    <td>
+                      <span class="status-pill">
+                        {{ project.status || 'Sin estado' }}
+                      </span>
+                    </td>
+                    <td>{{ project.requirementsCount }}</td>
+                    <td>{{ formatDate(project.updated_at || project.created_at) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,504 @@
+<div class="project-view-shell">
+  <div class="project-view-container">
+    <!-- =====================================================
+         HERO DEL PROYECTO
+    ===================================================== -->
+    <section class="project-hero-panel">
+      <div class="hero-top-bar">
+        <button class="btn-back-project" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i>
+          <span>Regresar</span>
+        </button>
+
+        <div class="hero-actions">
+          <button
+            class="btn-icon-action notification-btn modern-bell-btn"
+            (click)="openTasksModal()"
+          >
+            <div class="bell-icon-wrap">
+              <i class="bi bi-bell-fill"></i>
+              <span *ngIf="unreadTasks > 0" class="notification-counter">
+                {{ unreadTasks }}
+              </span>
+            </div>
+          </button>
+
+          <button class="btn-export-pdf" (click)="generatePDF()">
+            <i class="bi bi-file-earmark-pdf"></i>
+            <span>Exportar PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-main-grid">
+        <div class="hero-main-content">
+          <div class="project-mark">
+            <div class="project-mark-icon">
+              <i class="bi bi-folder2-open"></i>
+            </div>
+
+            <div class="project-mark-copy">
+              <div class="project-label-mini">Workspace del proyecto</div>
+              <h1>{{ project?.name }}</h1>
+              <p>
+                {{ project?.description || 'Sin descripción disponible para este proyecto.' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="hero-summary-grid">
+            <div class="summary-pill-card">
+              <div class="summary-pill-icon success-tone">
+                <i class="bi bi-check2-circle"></i>
+              </div>
+              <div>
+                <span class="summary-label">Estado</span>
+                <strong>{{ project?.status || '—' }}</strong>
+              </div>
+            </div>
+
+            <div class="summary-pill-card">
+              <div class="summary-pill-icon warning-tone">
+                <i class="bi bi-calendar-event"></i>
+              </div>
+              <div>
+                <span class="summary-label">Fecha límite</span>
+                <strong>{{ project?.deadline || '—' }}</strong>
+              </div>
+            </div>
+
+            <div class="summary-pill-card">
+              <div class="summary-pill-icon primary-tone">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <div>
+                <span class="summary-label">Creador</span>
+                <strong>{{ project?.owner?.username || '—' }}</strong>
+                <small>{{ project?.owner?.email || '' }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-side-card">
+          <div class="hero-side-header">
+            <span class="status-tag-main">{{ project?.status || 'Sin estado' }}</span>
+          </div>
+
+          <div class="hero-side-body">
+            <h4>Resumen rápido</h4>
+            <ul class="side-insight-list">
+              <li>
+                <i class="bi bi-list-task"></i>
+                <span>{{ requirements.length || 0 }} requisitos registrados</span>
+              </li>
+              <li>
+                <i class="bi bi-people"></i>
+                <span>{{ project?.collaborators?.length || 0 }} colaboradores asignados</span>
+              </li>
+              <li>
+                <i class="bi bi-bell"></i>
+                <span>{{ unreadTasks || 0 }} tareas pendientes por revisar</span>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ===================================================== -->
+    <div class="project-content-grid">
+      <!-- ================= COLABORADORES ================= -->
+      <section class="content-panel collaborators-panel">
+        <div class="panel-header-modern">
+          <div>
+            <span class="panel-kicker">Equipo</span>
+            <h3>
+              <i class="bi bi-people-fill"></i>
+              Colaboradores
+            </h3>
+          </div>
+
+          <div class="panel-count-badge">
+            {{ project?.collaborators?.length || 0 }}
+          </div>
+        </div>
+
+        <div
+          *ngIf="project?.collaborators?.length; else noCollabs"
+          class="collaborators-grid-modern"
+        >
+          <article *ngFor="let c of project?.collaborators" class="collaborator-card-modern">
+            <div class="collaborator-avatar-modern">
+              {{ c.username.charAt(0) | uppercase }}
+            </div>
+
+            <div class="collaborator-info-modern">
+              <h4>{{ c.username }}</h4>
+              <span class="role-chip-modern">{{ c.role }}</span>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #noCollabs>
+          <div class="empty-section-box">
+            <div class="empty-section-icon">
+              <i class="bi bi-person-x"></i>
+            </div>
+            <h4>No hay colaboradores asignados</h4>
+            <p>Cuando agregues miembros al proyecto aparecerán en esta sección.</p>
+          </div>
+        </ng-template>
+      </section>
+
+      <!-- ================= REQUISITOS ================= -->
+      <section class="content-panel requirements-panel">
+        <div class="panel-header-modern requirements-header">
+          <div>
+            <span class="panel-kicker">Estructura funcional</span>
+            <h3>
+              <i class="bi bi-ui-checks-grid"></i>
+              Requisitos
+            </h3>
+          </div>
+
+          <button class="btn-new-requirement" (click)="goToAddRequirement()">
+            <i class="bi bi-plus-circle"></i>
+            <span>Nuevo requisito</span>
+          </button>
+        </div>
+
+        <div *ngIf="requirements.length; else noRequirements" class="requirements-grid-modern">
+          <article *ngFor="let req of requirements" class="requirement-card-modern">
+            <div class="requirement-top">
+              <div class="requirement-icon-box">
+                <i class="bi bi-file-earmark-text"></i>
+              </div>
+
+              <div class="requirement-badges">
+                <span class="req-badge priority-badge">{{ req.priority }}</span>
+                <span class="req-badge status-badge">{{ req.status }}</span>
+              </div>
+            </div>
+
+            <div class="requirement-body">
+              <h4>{{ req.title }}</h4>
+              <p>{{ req.text }}</p>
+            </div>
+
+            <div class="requirement-actions">
+              <button class="req-action-btn" (click)="viewRequirement(req.id)" title="Ver">
+                <i class="bi bi-eye"></i>
+              </button>
+
+              <button class="req-action-btn" (click)="editRequirement(req.id)" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <button
+                class="req-action-btn danger"
+                (click)="deleteRequirement(req.id)"
+                title="Eliminar"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #noRequirements>
+          <div class="empty-section-box">
+            <div class="empty-section-icon">
+              <i class="bi bi-journal-x"></i>
+            </div>
+            <h4>No hay requisitos aún</h4>
+            <p>Comienza creando el primer requisito para estructurar este proyecto.</p>
+          </div>
+        </ng-template>
+      </section>
+
+      <!-- =====================================================
+     MODAL DE TAREAS
+     ===================================================== -->
+      <div
+        class="modal fade premium-modal"
+        id="tasksModal"
+        tabindex="-1"
+        aria-labelledby="tasksModalLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+      >
+        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+          <div class="modal-content premium-modal-content task-hub-modal">
+            <div class="modal-header premium-modal-header task-hub-header">
+              <div class="modal-header-mark">
+                <div class="modal-header-icon blue-gradient">
+                  <i class="bi bi-bell-fill"></i>
+                </div>
+
+                <div>
+                  <h5 class="modal-title mb-0" id="tasksModalLabel">Centro de tareas</h5>
+                  <small>Actividad, seguimiento y respuestas del proyecto</small>
+                </div>
+              </div>
+
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body premium-modal-body task-hub-body">
+              <div *ngIf="loadingTasks" class="tasks-loader-state">
+                <div class="loader-ring"></div>
+                <p>Cargando tareas...</p>
+              </div>
+
+              <ng-container *ngIf="!loadingTasks">
+                <div class="task-stats-grid">
+                  <div class="task-stat-card total-card">
+                    <div class="task-stat-icon">
+                      <i class="bi bi-kanban-fill"></i>
+                    </div>
+                    <div>
+                      <span>Total</span>
+                      <strong>{{ visibleTasks.length }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="task-stat-card pending-card">
+                    <div class="task-stat-icon">
+                      <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div>
+                      <span>Pendientes</span>
+                      <strong>{{ getPendingCount() }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="task-stat-card accepted-card">
+                    <div class="task-stat-icon">
+                      <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div>
+                      <span>Aceptadas</span>
+                      <strong>{{ getAcceptedCount() }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="task-stat-card rejected-card">
+                    <div class="task-stat-icon">
+                      <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <div>
+                      <span>Rechazadas</span>
+                      <strong>{{ getRejectedCount() }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="visibleTasks.length === 0" class="tasks-empty-state premium-empty">
+                  <div class="tasks-empty-icon">
+                    <i class="bi bi-inbox"></i>
+                  </div>
+                  <h4>No hay tareas registradas</h4>
+                  <p>Cuando se creen o asignen tareas aparecerán en este centro de actividad.</p>
+                </div>
+
+                <div *ngIf="visibleTasks.length > 0" class="task-board-modern">
+                  <article
+                    *ngFor="let task of visibleTasks"
+                    class="task-card-modern-pro"
+                    [ngClass]="getTaskStatusClass(task.status)"
+                  >
+                    <div class="task-card-accent"></div>
+
+                    <div class="task-card-content">
+                      <div class="task-top-row">
+                        <div class="task-title-group">
+                          <h4>{{ task.title }}</h4>
+                          <p>{{ task.description }}</p>
+                        </div>
+
+                        <span class="task-status-chip" [ngClass]="getTaskStatusClass(task.status)">
+                          {{ task.status | titlecase }}
+                        </span>
+                      </div>
+
+                      <div class="task-meta-modern">
+                        <div class="task-meta-pill">
+                          <i class="bi bi-person-circle"></i>
+                          <span>{{ task.assignedUser?.username || 'Sin asignar' }}</span>
+                        </div>
+
+                        <div class="task-meta-pill">
+                          <i class="bi bi-calendar-event"></i>
+                          <span>{{
+                            task.due_date
+                              ? (task.due_date | date: 'mediumDate')
+                              : 'Sin fecha límite'
+                          }}</span>
+                        </div>
+
+                        <div class="task-meta-pill">
+                          <i class="bi bi-hash"></i>
+                          <span>ID: {{ task.id }}</span>
+                        </div>
+                      </div>
+
+                      <div
+                        *ngIf="task.assignee_id === userId && task.status === 'pending'"
+                        class="task-actions-modern"
+                      >
+                        <button class="btn-task-accept" (click)="respondTask(task.id, true)">
+                          <i class="bi bi-check-lg"></i>
+                          <span>Aceptar</span>
+                        </button>
+
+                        <button class="btn-task-reject" (click)="respondTask(task.id, false)">
+                          <i class="bi bi-x-lg"></i>
+                          <span>Rechazar</span>
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="modal-footer premium-modal-footer task-hub-footer">
+              <div class="footer-hint">
+                Las notificaciones desaparecen de la campana apenas abras este centro de actividad.
+              </div>
+
+              <button
+                *ngIf="project?.owner_id === userId"
+                class="btn-create-task-modal"
+                data-bs-toggle="modal"
+                data-bs-target="#createTaskModal"
+              >
+                <i class="bi bi-plus-circle"></i>
+                <span>Crear nueva tarea</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+     MODAL CREAR TAREA
+===================================================== -->
+      <div
+        class="modal fade premium-modal"
+        id="createTaskModal"
+        tabindex="-1"
+        aria-labelledby="createTaskModalLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content premium-modal-content">
+            <div class="modal-header premium-modal-header">
+              <div class="modal-header-mark">
+                <div class="modal-header-icon green-gradient">
+                  <i class="bi bi-plus-circle"></i>
+                </div>
+
+                <div>
+                  <h5 class="modal-title mb-0" id="createTaskModalLabel">Nueva Tarea</h5>
+                  <small>Asigna responsabilidades dentro del proyecto</small>
+                </div>
+              </div>
+
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body premium-modal-body">
+              <div class="task-create-wrapper">
+                <app-task-create
+                  *ngIf="project?.id"
+                  [projectId]="project!.id"
+                  (taskCreated)="loadTasks(project!.id, true)"
+                ></app-task-create>
+              </div>
+            </div>
+
+            <div class="modal-footer premium-modal-footer">
+              <div class="footer-hint">Complete la información requerida para crear la tarea.</div>
+
+              <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+     MODAL CONFIRMAR ELIMINACIÓN
+===================================================== -->
+      <div
+        class="modal fade premium-modal"
+        id="confirmDeleteModal"
+        tabindex="-1"
+        aria-labelledby="confirmDeleteModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content premium-modal-content delete-modal-content">
+            <div class="modal-header premium-modal-header">
+              <div class="modal-header-mark">
+                <div class="modal-header-icon red-soft">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+
+                <div>
+                  <h5 class="modal-title mb-0" id="confirmDeleteModalLabel">
+                    Confirmar eliminación
+                  </h5>
+                  <small>Esta acción es irreversible</small>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+
+            <div class="modal-body premium-modal-body">
+              <div class="delete-warning-box">
+                <p>Estás a punto de eliminar este requisito del proyecto.</p>
+
+                <div class="delete-warning-note">
+                  <i class="bi bi-info-circle"></i>
+                  <span>
+                    Esta acción no se puede deshacer. Toda la información asociada será eliminada
+                    permanentemente.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer premium-modal-footer align-end">
+              <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                class="btn-modal-delete"
+                (click)="confirmDelete()"
+                data-bs-dismiss="modal"
+              >
+                <i class="bi bi-trash"></i>
+                <span>Eliminar definitivamente</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

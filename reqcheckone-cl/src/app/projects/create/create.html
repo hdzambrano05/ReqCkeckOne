@@ -1,0 +1,384 @@
+<div class="project-create-shell">
+  <div class="project-create-container">
+    <!-- ========= HERO / HEADER ========= -->
+    <section class="project-hero">
+      <div class="hero-badge">
+        <i class="bi bi-stars"></i>
+        <span>Workspace creativo</span>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-text">
+          <button class="btn-back-modern" type="button" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i>
+            <span>Regresar</span>
+          </button>
+
+          <h1>
+            Diseña un proyecto con una
+            <span class="text-gradient">estructura profesional</span>
+          </h1>
+
+          <p>
+            Organiza objetivos, estado, fecha límite y colaboradores desde una interfaz más clara,
+            moderna y enfocada en productividad.
+          </p>
+        </div>
+
+        <div class="hero-mini-card">
+          <div class="mini-icon">
+            <i class="bi bi-kanban-fill"></i>
+          </div>
+          <div>
+            <h4>Nuevo proyecto</h4>
+            <span>Configuración rápida y elegante</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= CONTENT ========= -->
+    <div class="project-layout">
+      <!-- ========= FORM CARD ========= -->
+      <section class="project-main-card">
+        <div class="card-header-modern">
+          <div>
+            <h2>Crear Proyecto</h2>
+            <p>Completa la información principal para registrar tu proyecto.</p>
+          </div>
+
+          <div class="header-step-pill">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <span>Formulario inteligente</span>
+          </div>
+        </div>
+
+        <form [formGroup]="projectForm" (ngSubmit)="createProject()" class="project-form-modern">
+          <!-- Nombre -->
+          <div class="field-block full">
+            <div class="floating-field">
+              <input
+                type="text"
+                class="form-control modern-input"
+                formControlName="name"
+                placeholder=" "
+              />
+              <label>Nombre del proyecto</label>
+              <div class="field-icon">
+                <i class="bi bi-folder2-open"></i>
+              </div>
+            </div>
+
+            <div
+              *ngIf="projectForm.get('name')?.invalid && projectForm.get('name')?.touched"
+              class="field-error"
+            >
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>El nombre del proyecto es obligatorio.</span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="field-block full">
+            <div class="floating-field textarea-field">
+              <textarea
+                class="form-control modern-input modern-textarea"
+                formControlName="description"
+                rows="1"
+                placeholder=" "
+                (input)="autoResize($event)"
+              ></textarea>
+              <label>Descripción</label>
+              <div class="field-icon top-icon">
+                <i class="bi bi-text-paragraph"></i>
+              </div>
+            </div>
+
+            <div class="helper-text">
+              Resume el propósito del proyecto, alcance o idea principal.
+            </div>
+          </div>
+
+          <!-- Fecha -->
+          <div class="field-block">
+            <div class="floating-field">
+              <input
+                type="date"
+                class="form-control modern-input date-input"
+                formControlName="deadline"
+                placeholder=" "
+              />
+              <label>Fecha límite</label>
+              <div class="field-icon">
+                <i class="bi bi-calendar-event"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="field-block">
+            <div class="floating-field select-field">
+              <select class="form-select modern-input" formControlName="status">
+                <option value="active">Activo</option>
+                <option value="completed">Completado</option>
+                <option value="archived">Archivado</option>
+              </select>
+              <label>Estado</label>
+              <div class="field-icon">
+                <i class="bi bi-flag"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colaboradores -->
+          <div class="field-block full collaborators-section">
+            <div class="section-top-row">
+              <div>
+                <h3>Colaboradores</h3>
+                <p>Selecciona las personas que participarán en este proyecto.</p>
+              </div>
+
+              <div
+                class="collaborators-counter"
+                [class.has-items]="selectedCollaborators.length > 0"
+              >
+                <i class="bi bi-people-fill"></i>
+                <span>{{ selectedCollaborators.length }} seleccionados</span>
+              </div>
+            </div>
+
+            <div
+              class="selected-collaborators"
+              *ngIf="selectedCollaborators.length; else emptyCollaborators"
+            >
+              <button
+                type="button"
+                *ngFor="let col of selectedCollaborators"
+                class="badge-collab"
+                (click)="removeCollaborator(col)"
+                [title]="'Quitar a ' + col.username"
+              >
+                <span class="badge-avatar">
+                  {{ col.username?.charAt(0) | uppercase }}
+                </span>
+                <span class="badge-name">{{ col.username }}</span>
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <ng-template #emptyCollaborators>
+              <div class="empty-collaborators-box">
+                <div class="empty-collab-icon">
+                  <i class="bi bi-person-plus"></i>
+                </div>
+                <div>
+                  <strong>Aún no has agregado colaboradores</strong>
+                  <p>Puedes añadirlos ahora o dejar el proyecto solo para ti.</p>
+                </div>
+              </div>
+            </ng-template>
+
+            <div class="collab-actions-row">
+              <button type="button" class="btn-collab-primary" (click)="openCollaboratorsModal()">
+                <i class="bi bi-plus-circle"></i>
+                <span>Añadir colaboradores</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-collab-secondary"
+                (click)="clearCollaborators()"
+                [disabled]="!selectedCollaborators.length"
+              >
+                <i class="bi bi-eraser"></i>
+                <span>Limpiar selección</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Error general -->
+          <div *ngIf="error" class="submit-error-box">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ error }}</span>
+          </div>
+
+          <!-- Botones -->
+          <div class="form-actions-modern">
+            <button class="btn-soft-modern" type="button" (click)="goBack()">Cancelar</button>
+            <button class="btn-gradient-modern" type="submit">
+              <i class="bi bi-check2-circle"></i>
+              <span>Crear proyecto</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ========= SUMMARY PANEL ========= -->
+      <aside class="project-side-panel">
+        <div class="summary-card">
+          <div class="summary-top">
+            <div class="summary-icon">
+              <i class="bi bi-eye-fill"></i>
+            </div>
+            <div>
+              <h3>Vista previa</h3>
+              <p>Así se está construyendo tu proyecto.</p>
+            </div>
+          </div>
+
+          <div class="preview-project-card">
+            <div class="preview-header">
+              <span class="preview-status" [ngClass]="statusClass">
+                {{ statusLabel }}
+              </span>
+            </div>
+
+            <h4>
+              {{ projectForm.get('name')?.value || 'Nombre del proyecto' }}
+            </h4>
+
+            <p>
+              {{
+                projectForm.get('description')?.value ||
+                  'Aquí aparecerá una breve descripción de tu proyecto en tiempo real.'
+              }}
+            </p>
+
+            <div class="preview-meta">
+              <div class="preview-meta-item">
+                <i class="bi bi-calendar-event"></i>
+                <span>{{ projectForm.get('deadline')?.value || 'Sin fecha definida' }}</span>
+              </div>
+
+              <div class="preview-meta-item">
+                <i class="bi bi-people"></i>
+                <span>{{ selectedCollaborators.length }} colaboradores</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div class="insight-title">
+              <i class="bi bi-lightbulb-fill"></i>
+              <span>Sugerencia</span>
+            </div>
+            <p>
+              Un nombre claro, una descripción breve y una fecha definida ayudan a organizar mejor
+              el trabajo desde el inicio.
+            </p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-number">{{ selectedCollaborators.length }}</span>
+              <span class="stat-label">Equipo</span>
+            </div>
+
+            <div class="stat-box">
+              <span class="stat-number">{{ projectForm.get('name')?.value?.length || 0 }}</span>
+              <span class="stat-label">Caracteres</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     MODAL COLABORADORES
+============================ -->
+<div class="modal fade" id="collaboratorsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content collaborators-modal-modern">
+      <div class="modal-header border-0">
+        <div class="modal-title-wrap">
+          <div class="modal-title-icon">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0">Seleccionar colaboradores</h5>
+            <small>Agrega personas al proyecto desde esta lista.</small>
+          </div>
+        </div>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-toolbar">
+          <div class="search-wrapper">
+            <input
+              type="text"
+              class="form-control modern-input modal-search-input"
+              placeholder="Buscar por nombre de usuario..."
+              [(ngModel)]="searchTerm"
+            />
+            <i class="bi bi-search search-icon"></i>
+          </div>
+
+          <button
+            type="button"
+            class="btn-clear-search"
+            (click)="clearSearch()"
+            [disabled]="!searchTerm"
+          >
+            Limpiar búsqueda
+          </button>
+        </div>
+
+        <div class="modal-selected-info">
+          <span class="selection-pill">
+            <i class="bi bi-check2-circle"></i>
+            {{ selectedCollaborators.length }} seleccionados
+          </span>
+        </div>
+
+        <div class="user-list-modern" *ngIf="filteredUsers().length; else noUsersFound">
+          <div
+            *ngFor="let u of filteredUsers()"
+            class="user-card-modern"
+            [class.selected]="isSelected(u)"
+          >
+            <div class="user-card-left">
+              <div class="user-avatar">
+                {{ u.username?.charAt(0) | uppercase }}
+              </div>
+
+              <div class="user-info">
+                <strong>{{ u.username }}</strong>
+                <small>{{ u.email }}</small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="user-select-btn"
+              [class.active]="isSelected(u)"
+              (click)="toggleCollaborator(u)"
+            >
+              <i class="bi" [ngClass]="isSelected(u) ? 'bi-check2-circle' : 'bi-plus-circle'"></i>
+              <span>{{ isSelected(u) ? 'Seleccionado' : 'Agregar' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <ng-template #noUsersFound>
+          <div class="empty-users-state">
+            <i class="bi bi-search-heart"></i>
+            <h6>No se encontraron usuarios</h6>
+            <p>Prueba con otro término de búsqueda.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn-soft-modern" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn-gradient-modern" data-bs-dismiss="modal">
+          <i class="bi bi-check2"></i>
+          <span>Confirmar selección</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
