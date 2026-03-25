@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class RequirementsService {
+  
   private apiUrl = `${environment.apiUrl}/requirements`;
   
 
