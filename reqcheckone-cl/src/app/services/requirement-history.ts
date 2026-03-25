@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class RequirementHistory {
-  private apiUrl = `${environment.apiUrl}//requirement_history`;
+  private apiUrl = `${environment.apiUrl}/requirement_history`;
 
   constructor(private http: HttpClient) {}
 
