@@ -2,10 +2,14 @@ import re
 import json
 import logging
 import asyncio
+import os
+from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from typing import Dict, Any
-from config import OPENAI_API_KEY
 
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # ==========================
 # CONFIGURACIÓN
 # ==========================
