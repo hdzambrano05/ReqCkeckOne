@@ -14,7 +14,7 @@ export interface LoginCredentials {
 export class AuthService {
   private base = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   login(credentials: LoginCredentials): Observable<any> {
     return this.http.post(`${this.base}/users/login`, credentials).pipe(
@@ -27,9 +27,21 @@ export class AuthService {
           localStorage.setItem('username', res.user.username);
           localStorage.setItem('id', res.user.id);
         }
-      })
+      }),
     );
   }
+
+  forgotPassword(data: { identifier: string }): Observable<any> {
+    return this.http.post(`${this.base}/users/forgot-password`, data);
+  }
+
+  resetPassword(data: {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}) {
+  return this.http.post(`${this.base}/users/reset-password`, data);
+}
 
   register(payload: { username: string; email: string; password: string }): Observable<any> {
     return this.http.post(`${this.base}/users`, payload);
@@ -63,8 +75,11 @@ export class AuthService {
     return id ? Number(id) : null;
   }
 
-  getUserById(id: number): Observable<{ id: number; username: string; email?: string; name?: string }> {
-  return this.http.get<{ id: number; username: string; email?: string; name?: string }>(`${this.base}/users/${id}`);
-}
-
+  getUserById(
+    id: number,
+  ): Observable<{ id: number; username: string; email?: string; name?: string }> {
+    return this.http.get<{ id: number; username: string; email?: string; name?: string }>(
+      `${this.base}/users/${id}`,
+    );
+  }
 }

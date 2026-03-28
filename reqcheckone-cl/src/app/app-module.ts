@@ -26,6 +26,8 @@ import { Landing } from './pages/landing/landing';
 /* Core */
 import { AuthInterceptor } from './core/auth-interceptor';
 import { AuthGuard } from './core/auth-guard';
+import { ForgotPassword } from './auth/forgot-password/forgot-password';
+import { ResetPassword } from './auth/reset-password/reset-password';
 
 
 @NgModule({
@@ -43,7 +45,9 @@ import { AuthGuard } from './core/auth-guard';
     HistoryRequirements,
     UpdateRequirement,
     TaskCreate,
-    Landing
+    Landing,
+    ForgotPassword,
+    ResetPassword
 
   ],
   imports: [
